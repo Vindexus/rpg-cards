@@ -170,11 +170,13 @@ function ui_save_file() {
 
 function ui_update_selected_card() {
     var card = ui_selected_card();
+    console.log('card', card)
     if (card) {
         $("#card-title").val(card.title);
         $("#card-title-size").val(card.title_size);
         $("#card-count").val(card.count);
         $("#card-icon").val(card.icon);
+        $("#card-icon-layout").val(card.icon_layout);
         $("#card-icon-back").val(card.icon_back);
 		$("#card-background").val(card.background_image);
         $("#card-contents").val(card.contents.join("\n"));
@@ -419,6 +421,7 @@ function ui_apply_default_color() {
 function ui_apply_default_icon() {
     for (var i = 0; i < card_data.length; ++i) {
         card_data[i].icon = card_options.default_icon;
+        card_data[i].icon_layout = card_options.default_icon_layout;
     }
     ui_render_selected_card();
 }
@@ -479,6 +482,8 @@ $(document).ready(function () {
     $("#card-title").change(ui_change_card_title);
     $("#card-title-size").change(ui_change_card_property);
     $("#card-icon").change(ui_change_card_property);
+    $("#card-icon-layout").change(ui_change_card_property);
+    $("#card-count").change(ui_change_card_property);
     $("#card-count").change(ui_change_card_property);
     $("#card-icon-back").change(ui_change_card_property);
 	$("#card-background").change(ui_change_card_property);

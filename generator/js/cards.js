@@ -14,7 +14,7 @@ function card_default_options() {
         card_arrangement: "doublesided",
         card_size: "25x35",
         card_count: null,
-        icon_inline: true
+        icon_layout: "inline_small"
     }
 }
 
@@ -85,19 +85,18 @@ function card_data_split_params(value) {
 function card_element_title(card_data, options) {
     var title = card_data.title || "";
     var title_size = card_data.title_size || options.default_title_size || 'normal';
-    return '<div class="card-title card-title-' + title_size + '">' + title + '</div>';
+    var classname = 'icon-layout-' + card_data.icon_layout
+
+    return '<div class="card-title card-title-' + title_size + ' ' + classname + '">' + title + '</div>';
 }
 
 function card_element_icon(card_data, options) {
     var icon = card_data_icon_front(card_data, options);
-    var classname = "icon";
-    if (options.icon_inline) {
-        classname = "inlineicon";
-    }
+    var classname = 'icon-layout-' + card_data.icon_layout
 
     var result = "";
-    result += '<div class="card-title-' + classname + '-container">';
-    result += '    <div class="card-title-' + classname + ' icon-' + icon + '">';
+    result += '<div class="card-title-icon-container ' + classname + '">';
+    result += '    <div class="card-title-icon ' + classname + ' icon-' + icon + '">';
     result += '    </div>';
     result += '</div>';
     return result;

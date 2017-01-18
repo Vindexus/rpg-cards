@@ -151,12 +151,16 @@
                 <h3>Default values</h3>
                 <form role="form" class="form-horizontal">
                     <div class="form-group">
-                        <label for="small-icons" class="col-sm-2 control-label">Icon</label>
+                        <label for="small-icons" class="col-sm-2 control-label">Icon Layout</label>
                         <div class="col-sm-10">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" checked id="small-icons"> Use small front icons
-                                </label>
+                            <div class="input-group">
+                                <select class="form-control" id="default-icon-layout">
+                                    <option value="inline_small">Inline Small</option>
+                                    <option value="inline_large">Inline Large</option>
+                                    <option value="newline_small">Newline Small</option>
+                                    <option value="newline_medium">Newline Medium</option>
+                                    <option value="newline_large">Newline Large</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -270,6 +274,18 @@
                         <label for="card-tags" class="col-sm-2 control-label">Tags</label>
                         <div class="col-sm-10">
                             <input type="text" id="card-tags" class="form-control" placeholder="Tags">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="card-icon-layout" class="col-sm-2 control-label">Icon Layout</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="card-icon-layout" data-property="icon_layout">
+                                <option value="inline_small">Inline Small</option>
+                                <option value="inline_large">Inline Large</option>
+                                <option value="newline_small">Newline Small</option>
+                                <option value="newline_medium">Newline Medium</option>
+                                <option value="newline_large">Newline Large</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">

@@ -54,7 +54,7 @@
     background-size: contain;
 }
 
-.card-title-icon {
+.card-title-icon.icon-layout-inline_large {
     width: 12mm;
     height: 12mm;
     background-repeat: no-repeat;
@@ -62,17 +62,8 @@
     background-color: inherit;
     border-color: inherit;
 }
-.card-title-icon-container {
-    position: absolute;
-    right: -1mm;
-    top: -1mm;
-    border: 1mm solid;
-    border-radius: 1mm;
-    background-color: inherit;
-    border-color: inherit;
-}
 
-.card-title-inlineicon {
+.card-title-icon.icon-layout-inline_small {
     width: 7mm;
     height: 7mm;
     background-repeat: no-repeat;
@@ -80,7 +71,45 @@
     background-color: inherit;
     border-color: inherit;
 }
-.card-title-inlineicon-container {
+
+.card-title-icon-container.icon-layout-newline_small .card-title-icon,
+.card-title-icon-container.icon-layout-newline_medium .card-title-icon,
+.card-title-icon-container.icon-layout-newline_large .card-title-icon {
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+    background-size: contain;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.card-title-icon-container.icon-layout-newline_small,
+.card-title-icon-container.icon-layout-newline_medium,
+.card-title-icon-container.icon-layout-newline_large {
+    top: 8mm;
+    left: 50%;
+}
+
+.card-title-icon-container.icon-layout-newline_small {
+    width: 10mm;
+    height: 10mm;
+    margin-left: -5mm;
+}
+
+.card-title-icon-container.icon-layout-newline_medium {
+    width: 15mm;
+    height: 15mm;
+    margin-left: -7.5mm;
+}
+
+.card-title-icon-container.icon-layout-newline_large{
+    width: 20mm;
+    height: 20mm;
+    margin-left: -10mm;
+}
+
+.card-title-icon-container {
     position: absolute;
     right: -1mm;
     top: -1mm;
@@ -99,6 +128,23 @@
     background-color: inherit;
     color: white;
 }
+
+.card-title.icon-layout-newline_small,
+.card-title.icon-layout-newline_medium,
+.card-title.icon-layout-newline_large {
+    text-align: center;
+}
+
+.card-title.icon-layout-newline_small {
+    padding-bottom: 20mm;
+}
+.card-title.icon-layout-newline_medium {
+    padding-bottom: 25mm;
+}
+.card-title.icon-layout-newline_large {
+    padding-bottom: 30mm;
+}
+
 .card-title-16 {
     font-size: 16pt;
     line-height: 6.5mm;
