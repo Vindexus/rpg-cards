@@ -464,7 +464,7 @@ function local_store_load() {
 $(document).ready(function () {
     local_store_load();
     ui_setup_color_selector();
-    $('.icon-list').typeahead({source:icon_names});
+    $('.icon-list').typeahead({source:icon_names, items: 'all'});
 
     $("#button-generate").click(ui_generate);
     $("#button-load").click(function () { $("#file-load").click(); });
