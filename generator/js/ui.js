@@ -353,6 +353,14 @@ function ui_change_card_contents() {
     }
 }
 
+function ui_change_card_contents_keyup () {
+    clearTimeout(ui_change_card_contents_keyup.timeout)
+    ui_change_card_contents_keyup.timeout = setTimeout(function () {
+        $('#card-contents').trigger('change')
+    }, 200)
+}
+ui_change_card_contents_keyup.timeout = null
+
 function ui_change_card_tags() {
     var value = $(this).val();
 
@@ -495,6 +503,9 @@ $(document).ready(function () {
 	$("#card-color").change(ui_change_card_color);
     $("#card-contents").change(ui_change_card_contents);
     $("#card-tags").change(ui_change_card_tags);
+
+    $("#card-contents").keyup(ui_change_card_contents_keyup);
+
 
     $("#page-size").change(ui_change_option);
     $("#page-rows").change(ui_change_option);
