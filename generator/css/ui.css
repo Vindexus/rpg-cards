@@ -60,3 +60,22 @@
 .form-horizontal {
     margin-top: 10px;
 }
+
+
+.dropdown-menu>li>a {
+    padding-left: 35px;
+    position: relative;
+}
+
+.dropdown-menu a > span {
+    position: absolute;
+    left: 5px;
+    background-color: #000;
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 24px;
+    height: 24px;
+    background-size: auto 90%;
+    top: 50%;
+    margin-top: -12px;
+}
