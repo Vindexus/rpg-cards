@@ -193,7 +193,6 @@ function ui_update_selected_card() {
         $("#card-color").val("").change();
     }
 
-    local_store_save();
     ui_render_selected_card();
 }
 
@@ -205,6 +204,7 @@ function ui_render_selected_card() {
         var back = card_generate_back(card, card_options);
         $('#preview-container').html(front + "\n" + back);
     }
+    local_store_save()
 }
 
 function ui_open_help() {
