@@ -68,6 +68,13 @@ function ui_clear_all() {
     ui_update_card_list();
 }
 
+function ui_load_json () {
+    var json = $('#json').val();
+    var data = JSON.parse(json);
+    card_data = [];
+    ui_add_cards(data);
+}
+
 function ui_load_files(evt) {
     // ui_clear_all();
 
@@ -449,14 +456,16 @@ function ui_apply_default_icon_back() {
 
 //Adding support for local store
 function local_store_save() {
+    var json = JSON.stringify(card_data)
     if(window.localStorage){
         try {
-            localStorage.setItem("card_data", JSON.stringify(card_data));
+            localStorage.setItem("card_data", json);
         } catch (e){
             //if the local store save failed should we notify the user that the data is not being saved?
             console.log(e);
         }
     }
+    $('#json').val(json);
 }
 function local_store_load() {
     if(window.localStorage){
@@ -475,6 +484,7 @@ $(document).ready(function () {
     $('.icon-list').typeahead({source:icon_names, items: 'all'});
 
     $("#button-generate").click(ui_generate);
+    $("#button-load-json").click(ui_load_json);
     $("#button-load").click(function () { $("#file-load").click(); });
     $("#file-load").change(ui_load_files);
     $("#button-clear").click(ui_clear_all);
