@@ -75,6 +75,19 @@ function ui_load_json () {
     ui_add_cards(data);
 }
 
+function ui_copy_json () {
+  var copyTextarea = $('#json')
+  copyTextarea.select();
+
+  try {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    console.log('Copying text command was ' + msg);
+  } catch (err) {
+    console.log('Oops, unable to copy');
+  }
+}
+
 function ui_load_files(evt) {
     // ui_clear_all();
 
@@ -485,6 +498,7 @@ $(document).ready(function () {
 
     $("#button-generate").click(ui_generate);
     $("#button-load-json").click(ui_load_json);
+    $("#button-copy-json").click(ui_copy_json);
     $("#button-load").click(function () { $("#file-load").click(); });
     $("#file-load").change(ui_load_files);
     $("#button-clear").click(ui_clear_all);

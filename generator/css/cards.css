@@ -235,9 +235,7 @@
     font-size: inherit;
     font-style: italic;
 }
-.card-description-name::after {
-    content: ".";
-}
+
 .card-description-text {
     display: inline;
 }
