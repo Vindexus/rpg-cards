@@ -204,8 +204,9 @@
       items = $(items).map(function (i, item) {
         i = $(that.options.item).data('value', item);
         i.find('a').html(that.highlighter(item));
-        var classname = 'icon-' + item.split(' ').join('-').toLowerCase()
-        i.find('a').append('<span class="' + classname + '"></span>')
+        var iconname = item.split(' ').join('-').toLowerCase();
+        var classname = 'icon-' + iconname;
+        i.find('a').append('<span class="' + classname + '" style="background-image: url(./img/' + iconname + '.png)"></span>')
         return i[0];
       });
 
@@ -357,7 +358,7 @@
 
   , blur: function (e) {
       this.focused = false;
-      if (!this.mousedover && this.shown) this.hide();
+      //if (!this.mousedover && this.shown) this.hide();
     }
 
   , click: function (e) {

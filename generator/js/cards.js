@@ -8,10 +8,10 @@ function card_default_options() {
         default_color: "black",
         default_icon: "ace",
         default_title_size: "13",
-        page_size: "A4",
+        page_size: "Letter",
         page_rows: 3,
         page_columns: 3,
-        card_arrangement: "doublesided",
+        card_arrangement: "front_only",
         card_size: "25x35",
         card_count: null,
         icon_layout: "inline_small"
@@ -96,7 +96,7 @@ function card_element_icon(card_data, options) {
 
     var result = "";
     result += '<div class="card-title-icon-container ' + classname + '">';
-    result += '    <div class="card-title-icon ' + classname + ' icon-' + icon + '">';
+    result += '    <div class="card-title-icon ' + classname + ' icon-' + icon + '" style="background-image: url(./img/' + icon + '.png);">';
     result += '    </div>';
     result += '</div>';
     return result;
