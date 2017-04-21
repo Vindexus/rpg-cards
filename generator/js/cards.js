@@ -131,13 +131,14 @@ function card_element_boxes(params, card_data, options) {
     var stroke = ' stroke="' + color + '"';
     var count = params[0] || 1;
     var size = params[1] || 3;
+    var strokeSize = params[2] || 10;
     var style = 'style="width:' + size + 'em;height:' + size + 'em"';
 
     var result = "";
     result += '<div class="card-element card-description-line">';
     for (var i = 0; i < count; ++i) {
         result += '<svg class="card-box" height="100" width="100" viewbox="0 0 100 100" preserveaspectratio="none" xmlns="http://www.w3.org/2000/svg" ' + style + '>';
-        result += '    <rect x="5" y="5" width="90" height="90" ' + fill + stroke + ' style="stroke-width:10">';
+        result += '    <rect x="5" y="5" width="90" height="90" ' + fill + stroke + ' style="stroke-width:' + strokeSize + '">';
         result += '</svg>';
     }
     result += '</div>';
