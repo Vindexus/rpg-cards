@@ -1,6 +1,7 @@
 // Ugly global variable holding the current card deck
 var card_data = [];
 var card_options = card_default_options();
+var deck_data = [];
 
 function mergeSort(arr, compare) {
     if (arr.length < 2)
@@ -126,6 +127,18 @@ function ui_add_new_card() {
     ui_select_card_by_index(card_data.length - 1);
 }
 
+function ui_add_new_deck () {
+    deck_data.push({title: 'New Deck'});
+    local_store_save();
+    local_store_load();
+}
+
+function ui_delete_deck () {
+    deck_data.splice(ui_selected_deck_index());
+    local_store_save();
+    local_store_load();
+}
+
 function ui_duplicate_card() {
     if (card_data.length > 0) {
         var old_card = ui_selected_card();
@@ -148,8 +161,16 @@ function ui_selected_card_index() {
     return parseInt($("#selected-card").val(), 10);
 }
 
+function ui_selected_deck_index () {
+    return parseInt($("#selected-deck").val(), 10);
+}
+
 function ui_selected_card() {
     return card_data[ui_selected_card_index()];
+}
+
+function ui_selected_deck () {
+    return card_data[ui_selected_deck_index()];
 }
 
 function ui_delete_card() {
@@ -174,6 +195,17 @@ function ui_update_card_list() {
     ui_update_selected_card();
 }
 
+function ui_update_deck_list() {
+    $('#selected-deck').empty();
+    for (var i = 0; i < deck_data.length; ++i) {
+        var deck = deck_data[i];
+        $('#selected-deck')
+            .append($("<option></option>")
+            .attr("value", i)
+            .text(deck.title));
+    }
+}
+
 function ui_save_file() {
     var str = JSON.stringify(card_data, null, "  ");
     var parts = [str];
@@ -186,6 +218,15 @@ function ui_save_file() {
     a.click();
 
     setTimeout(function () { URL.revokeObjectURL(url); }, 500);
+}
+
+function ui_update_selected_deck () {
+    //
+    var data = JSON.parse(window.localStorage.getItem('card_data/' + ui_selected_deck_index()))
+    console.log('data', data);
+    card_data = data;
+    ui_update_card_list();
+    return true;
 }
 
 function ui_update_selected_card() {
@@ -472,7 +513,8 @@ function local_store_save() {
     var json = JSON.stringify(card_data)
     if(window.localStorage){
         try {
-            localStorage.setItem("card_data", json);
+            localStorage.setItem("card_data/" + ui_selected_deck_index(), json);
+            localStorage.setItem("deck_data", JSON.stringify(deck_data));
         } catch (e){
             //if the local store save failed should we notify the user that the data is not being saved?
             console.log(e);
@@ -480,10 +522,17 @@ function local_store_save() {
     }
     $('#json').val(json);
 }
+
 function local_store_load() {
     if(window.localStorage){
         try {
-            card_data = JSON.parse(localStorage.getItem("card_data")) || card_data;
+            deck_data = JSON.parse(localStorage.getItem('deck_data')) || deck_data;
+            console.log('deck_data', deck_data);
+            if(deck_data.length == 0) {
+                deck_data.push({title: 'Default Deck'});
+            }
+            card_data = JSON.parse(localStorage.getItem("card_data/" + ui_selected_deck_index())) || card_data;
+            ui_update_deck_list();
         } catch (e){
             //if the local store load failed should we notify the user that the data load failed?
             console.log(e);
@@ -506,15 +555,29 @@ $(document).ready(function () {
     //$("#button-save").click(ui_save_file);
     $("#button-sort").click(ui_sort);
     $("#button-filter").click(ui_filter);
+    
+    $('#button-add-deck').click(ui_add_new_deck);
+    $('#button-delete-deck').click(ui_delete_deck)
+    $('#button-rename-deck').click(function () {
+        var name = prompt("New name");
+        if(name) {
+            deck_data[ui_selected_deck_index()].title = name;
+            local_store_save();
+            ui_update_deck_list();
+        }
+    })
+
     $("#button-add-card").click(ui_add_new_card);
     $("#button-duplicate-card").click(ui_duplicate_card);
     $("#button-delete-card").click(ui_delete_card);
+    
     $("#button-help").click(ui_open_help);
     $("#button-apply-color").click(ui_apply_default_color);
     $("#button-apply-icon").click(ui_apply_default_icon);
     $("#button-apply-icon-back").click(ui_apply_default_icon_back);
 
     $("#selected-card").change(ui_update_selected_card);
+    $("#selected-deck").change(ui_update_selected_deck);
 
     $("#card-title").change(ui_change_card_title);
     $("#card-title-size").change(ui_change_card_property);
