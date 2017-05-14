@@ -102,6 +102,26 @@ function card_element_icon(card_data, options) {
     return result;
 }
 
+function card_element_nb () {
+    return '<div>&nbsp;</div>';
+}
+
+function card_element_attack (params, card_data, options) {
+    var num = parseInt(params[0])
+    var numIcons = params.length > 1 ? parseInt(params[1]) : num;
+    var result = '<div class="card-attack-num">' + num + '</div>';
+    if(numIcons > 0) {
+        var icons = ""
+        for(var i = 1; i <= numIcons; i++) {
+            icons += '<div class="card-attack-icons-icon num-' + i + '"></div>';
+        }
+        result += '<div class="card-attack-icons num-' + numIcons + '">' + icons + '</div>';
+    }
+    return result;
+
+
+}
+
 function card_element_subtitle(params, card_data, options) {
     var subtitle = params[0] || "";
     return '<div class="card-element card-subtitle">' + subtitle + '</div>';
@@ -255,7 +275,9 @@ var card_element_generators = {
     fill: card_element_fill,
     section: card_element_section,
     disabled: card_element_empty,
-	picture: card_element_picture
+    picture: card_element_picture,
+    attack: card_element_attack,
+    nb: card_element_nb
 };
 
 // ============================================================================
@@ -296,12 +318,26 @@ function card_generate_color_gradient_style(color, options) {
     return 'style="background: radial-gradient(ellipse at center, white 20%, ' + color + ' 120%)"';
 }
 
+function card_generate_tag_classes (data) {
+    var classes = data.tags.reduce(function (list, tag, index) {
+        tag = tag.trim()
+        if(tag.length > 0) {
+            list.push('tag-' + tag);
+        }
+        return list
+    }, []);
+
+    return classes.join(" ");
+}
+
 function card_generate_front(data, options) {
     var color = card_data_color_front(data, options);
     var style_color = card_generate_color_style(color, options);
 
+    var tag_classes = card_generate_tag_classes(data);
+
     var result = "";
-    result += '<div class="card card-size-' + options.card_size + '" ' + style_color + '>';
+    result += '<div class="card card-size-' + options.card_size + ' ' + card_generate_tag_classes(data) + '" ' + style_color + '>';
     result += card_element_icon(data, options);
     result += card_element_title(data, options);
     result += card_generate_contents(data.contents, data, options);

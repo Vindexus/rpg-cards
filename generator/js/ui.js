@@ -612,6 +612,24 @@ $(document).ready(function () {
     $("#sort-execute").click(ui_sort_execute);
     $("#filter-execute").click(ui_filter_execute);
 
+    $('#select-prev-card').click(function (e) {
+        e.preventDefault();
+        var index = parseInt($('#selected-card').val());
+        if(index == 0) {
+            index = card_data.length - 1;
+        }
+        ui_select_card_by_index(index - 1);
+    })
+
+    $('#select-next-card').click(function (e) {
+        e.preventDefault();
+        var index = parseInt($('#selected-card').val());
+        if(index >= card_data.length - 1) {
+            index = 0
+        }
+        ui_select_card_by_index(index + 1);
+    })
+
     ui_update_card_list();
 });
 
