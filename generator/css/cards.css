@@ -25,6 +25,7 @@
     font-size: inherit;
 }
 
+
 .card-back {
 /*     background-color: white; */
     border-radius: 4mm;
@@ -282,4 +283,77 @@
     margin-bottom: 0;
     margin-top: 0;
     font-size: inherit;
+}
+
+/* Black Dungeon Specific */
+
+.card.tag-attack {
+    background: white !important;
+}
+
+.card.tag-attack .card-title-icon-container.icon-layout-newline_large {
+    top: 50%;
+    margin-top: -10mm;
+    display: none;
+}
+
+.card-attack-num {
+    padding:  0px 10px 20px;
+    text-align: center;
+    top: -2mm;
+    left: -2mm;
+    position: absolute;
+    border-bottom-right-radius: 3px;
+    background: url('../img/crossed-swords.png') center 34px no-repeat #000;
+    background-size: 22px auto;
+    color: #fff;
+    font-size: 28px;
+    border: 3px solid #000;
+}
+
+.card-attack-icons {
+    width: 16mm;
+    left: 50%;
+    position: absolute;
+    height: 16mm;
+    top: 50%;
+    margin-top: -8mm;
+    margin-left: -8mm;
+}
+
+.card-attack-icons.num-2,
+.card-attack-icons.num-4 {
+    height: 36mm;
+    margin-top: -18mm;
+}
+
+.card-attack-icons.num-3 {
+    height: 56mm;
+    margin-top: -28mm;
+}
+
+.card-attack-icons.num-4 {
+    width: 36mm;
+    margin-left: -18mm;
+}
+
+.card-attack-icons.num-4 .num-1,
+.card-attack-icons.num-4 .num-3 {
+    margin-right: 4mm;
+}
+
+.card-attack-icons-icon:first-of-type,
+.card-attack-icons.num-4 .num-2 {
+    margin-top: 0mm;
+}
+
+.card-attack-icons-icon {
+    width: 16mm;
+    height: 16mm;
+    background: url('../img/crossed-swords.png') center center #000;
+    background-size: contain;
+    border-radius: 1mm;
+    margin-top: 4mm;
+    display: block;
+    float: left;
 }
