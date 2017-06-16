@@ -1,5 +1,4 @@
 .card {
-    border: 2mm solid;
     box-sizing: border-box;
     position: relative;
     display: flex;
@@ -83,9 +82,11 @@
     height: 100%;
     left: 0px;
     top: 0px;
-    background-size: contain;
+    background-size: 95% auto;
     background-position: center center;
     background-repeat: no-repeat;
+    border-radius: 1mm;
+    background-color: white;
 }
 
 .card-title-icon-container.icon-layout-newline_small,
@@ -108,9 +109,10 @@
 }
 
 .card-title-icon-container.icon-layout-newline_large{
-    width: 20mm;
-    height: 20mm;
-    margin-left: -10mm;
+    width: 24mm;
+    height: 24mm;
+    margin-left: -12mm;
+    top: 14mm;
 }
 
 .card-title-icon-container {
@@ -146,7 +148,7 @@
     padding-bottom: 25mm;
 }
 .card-title.icon-layout-newline_large {
-    padding-bottom: 30mm;
+    padding-bottom: 40mm;
 }
 
 .card-title-16 {
@@ -230,6 +232,7 @@
     margin-bottom: 0.0em;
     font-size: inherit;
     color: black;
+    font-size: 9pt;
 }
 .card-description-name {
     display: inline;
@@ -347,6 +350,16 @@
     margin-top: 0mm;
 }
 
+.card-content-container .card-inline-icon {
+    display: inline-block;
+    height: 14px;
+    width: 14px;
+    background-position: center center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-bottom: -3px;
+}
+
 .card-attack-icons-icon {
     width: 16mm;
     height: 16mm;
@@ -356,4 +369,115 @@
     margin-top: 4mm;
     display: block;
     float: left;
+}
+
+.card-inline-icon.glyph {
+    width: 40px;
+    height: 40px;
+    background-size: 90%;
+    position: absolute;
+    bottom: -5px;
+    left: -5px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-color: #000;
+    border-top-right-radius: 5px;
+}
+
+.color-white .card-title {
+    border: 1mm solid black;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 2mm;
+    border-top-left-radius: 2mm;
+    color: #000;
+    border-bottom: 0px;
+    padding-top: 1mm;
+}
+
+.color-white .card-content-container {
+    border: 1mm solid black;
+    border-top: 0px;
+    border-top-right-radius: 0px;
+    border-top-left-radius: 0px;
+}
+
+.color-white h3 {
+    color: black;
+}
+
+.card.color-white {
+    background: black;
+}
+
+.card.color-white .card-title {
+    background: #fff;
+    text-align: center;
+}
+
+.card .card-inline-icons .card-inline-icons-icon {
+    background-size: contain;
+    float: left;
+    width: 26px;
+    height: 26px;
+    margin: 0 5px 0 0;
+}
+
+.card-title-icon-container.icon-layout-newline_large {
+    background: none;
+    border: 1px solid #000;
+}
+
+.card .card-inline-icons .card-inline-icons-icon.icon-drop {
+    margin-right: 2px;
+    width: 20px;
+    background-size: auto 100%;
+    background-position: center center;
+}
+
+.card .flavor-text {
+    text-align: center;
+    font-style: italic;
+    font-family: serif;
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+.card .card-mana {
+    font-size: 18px;
+    line-height: 26px;
+    position: absolute;
+    right: 0px;
+    width: 100px;
+    text-align: left;
+    padding: 4px 10px 4px 7px;
+    width: 100%;
+    top: 0;
+    border-bottom: 1px solid #000;
+    letter-spacing: -2px;
+}
+
+.card .card-mana .card-mana-cost {
+    position: relative;
+    top: -3px;
+}
+
+.card .card-mana .icon-drop {
+    width: 18px;
+    height: 26px;
+    background-size: auto 100%;
+    background-position: center;
+    display: inline-block;
+    margin-right: 2px;
+    position: relative;
+    top: 3px;
+}
+
+.card-mana, .card-effect {
+    margin-bottom: 3mm;
+}
+
+.card-mana h3,
+.card-effect h3 {
+    display: none;
 }
