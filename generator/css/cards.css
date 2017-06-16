@@ -82,11 +82,11 @@
     height: 100%;
     left: 0px;
     top: 0px;
-    background-size: 95% auto;
+    background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
     border-radius: 1mm;
-    background-color: white;
+    background-color: black;
 }
 
 .card-title-icon-container.icon-layout-newline_small,

@@ -2,6 +2,7 @@
 var card_data = [];
 var card_options = card_default_options();
 var deck_data = [];
+var firebaseLoaded = false;
 
 function mergeSort(arr, compare) {
     if (arr.length < 2)
@@ -161,15 +162,19 @@ function ui_select_card_by_index(index) {
 }
 
 function ui_selected_card_index() {
-    return parseInt($("#selected-card").val(), 10);
+    var index = parseInt($("#selected-card").val(), 10);
+    return isNaN(index) ? 0 : index;
 }
 
 function ui_selected_deck_index () {
-    return parseInt($("#selected-deck").val(), 10);
+    var index = parseInt($("#selected-deck").val(), 10);
+    return isNaN(index) ? 0 : index;
 }
 
 function ui_selected_card() {
-    return card_data[ui_selected_card_index()];
+    var card = card_data[ui_selected_card_index()];
+    card.tags = card.tags || []
+    return card;
 }
 
 function ui_selected_deck () {
@@ -517,7 +522,8 @@ function ui_apply_default_icon_back() {
 //Adding support for local store
 function local_store_save() {
     var json = JSON.stringify(card_data)
-    if(window.localStorage){
+    //false cause firebase now
+    if(window.localStorage && false){
         try {
             var path = "card_data/" + ui_selected_deck_index();
             localStorage.setItem(path, json);
@@ -527,11 +533,22 @@ function local_store_save() {
             console.log(e);
         }
     }
+    var deck_index = ui_selected_deck_index();
+    var fbCards = fbDatabase.ref('cards/' + deck_index);
+    var fbDecks = fbDatabase.ref('decks');
+    console.log('firebaseLoaded', firebaseLoaded);
+    if(firebaseLoaded) {
+        fbCards.set(card_data);
+        fbDecks.set(deck_data);
+    }
     $('#json').val(json);
 }
 
+
+var fbDecks;
+var fbCards;
 function local_store_load() {
-    if(window.localStorage){
+    if(window.localStorage && false){
         try {
             deck_data = JSON.parse(localStorage.getItem('deck_data')) || deck_data;
             if(deck_data.length == 0) {
@@ -545,11 +562,32 @@ function local_store_load() {
             console.log('path', path);
             card_data = JSON.parse(localStorage.getItem(path)) || card_data;
             ui_update_deck_list();
+            ui_update_card_list();
         } catch (e){
             //if the local store load failed should we notify the user that the data load failed?
             console.log(e);
         }
     }
+
+    fbDecks = fbDatabase.ref('decks');
+    fbDecks.on('value', function (snap) {
+        var decks = snap.val()
+        firebaseLoaded = true;
+        if(decks == null) {
+            console.log('empty data from firebase');
+            deck_data = [{title: 'Default Deck'}]
+            ui_update_deck_list();
+        }
+        var index = ui_selected_deck_index();
+        fbCards = fbDatabase.ref('cards/' + index);
+        fbCards.on('value', function (snap) {
+            var val = snap.val();
+            console.log('val', val);
+            card_data = val;
+            ui_update_card_list();
+            ui_render_selected_card();
+        })
+    })
 }
 
 $(document).ready(function () {
