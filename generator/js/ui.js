@@ -570,7 +570,7 @@ function local_store_load() {
     }
 
     fbDecks = fbDatabase.ref('decks');
-    fbDecks.on('value', function (snap) {
+    fbDecks.once('value', function (snap) {
         var decks = snap.val()
         firebaseLoaded = true;
         if(decks == null) {
@@ -580,12 +580,16 @@ function local_store_load() {
         }
         var index = ui_selected_deck_index();
         fbCards = fbDatabase.ref('cards/' + index);
-        fbCards.on('value', function (snap) {
+        fbCards.once('value', function (snap) {
             var val = snap.val();
             console.log('val', val);
             card_data = val;
+            var index = ui_selected_card_index();
+            console.log('ui_selected_card_index', ui_selected_card_index);
             ui_update_card_list();
-            ui_render_selected_card();
+            //$('#selected-card').val(index);
+            ui_select_card_by_index(index);
+            //ui_render_selected_card();
         })
     })
 }

@@ -475,6 +475,7 @@
     margin-right: 2px;
     position: relative;
     top: 3px;
+    margin-bottom: 0px;
 }
 
 .card-mana, .card-effect {
