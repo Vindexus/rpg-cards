@@ -12,6 +12,10 @@
     box-sizing: border-box;
 }
 
+.monster-ability .card-description-text {
+    font-size: 15px;
+}
+
 .card-content-container {
     padding:2mm;
     padding-top:1mm;
