@@ -31,6 +31,21 @@
     <!-- Fonts -->
     <link href='https://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Lora:700' rel='stylesheet' type='text/css'>
+    <script src="https://www.gstatic.com/firebasejs/4.1.2/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyCxtSrRb5RcWjbSYxheJ3ZBERK01R__5ZI",
+        authDomain: "blackjack-wizards.firebaseapp.com",
+        databaseURL: "https://blackjack-wizards.firebaseio.com",
+        projectId: "blackjack-wizards",
+        storageBucket: "blackjack-wizards.appspot.com",
+        messagingSenderId: "740419165709"
+      };
+      firebase.initializeApp(config);
+      var fbDatabase = firebase.database();
+      var fbCards = fbDatabase.ref('/cards');
+    </script>
 </head>
 <body>
     <div class="container-fluid">
@@ -229,15 +244,34 @@
                 <!--<h3>Card</h3>-->
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
-                        <label for="selected-card" class="col-sm-2 control-label">Deck</label>
+                        <label for="selected-deck" class="col-sm-2 control-label">Deck</label>
                         <div class="col-sm-10">
-                            <p class="form-control-static" id="total_card_count">Deck contains 0 cards.</p>
+                            <select class="form-control" id="selected-deck"></select>
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="col-sm-2 control-label"></label>
+                        <div class="col-sm-3">
+                            <button type="button" class="btn btn-primary btn-block" id="button-add-deck">Add new deck</button>
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="button" class="btn btn-primary btn-block" id="button-rename-deck">Rename deck</button>
+                        </div>
+                        <div class="col-sm-4">
+                            <button type="button" class="btn btn-danger btn-block" id="button-delete-deck">Delete deck</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label for="selected-card" class="col-sm-2 control-label">Card</label>
-                        <div class="col-sm-10">
+                        <div class="col-sm-8">
                             <select class="form-control" id="selected-card"></select>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="btn-group">
+                                <button class="btn btn-sm" id="select-prev-card" type="button">/\</button>
+                                <button class="btn btn-sm" id="select-next-card" type="button">\/</button>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -251,6 +285,7 @@
                         <div class="col-sm-3">
                             <button type="button" class="btn btn-primary btn-block" id="button-duplicate-card">Duplicate card</button>
                         </div>
+                        <p class="form-control-static col-sm-offset-2 col-sm-10" id="total_card_count">Deck contains 0 cards.</p>
                     </div>
                     <div class="form-group">
                         <label for="card-title" class="col-sm-2 control-label">Name</label>
@@ -277,6 +312,12 @@
                         <label for="card-count" class="col-sm-2 control-label">Count</label>
                         <div class="col-sm-10">
                             <input type="number" id="card-count" class="form-control" placeholder="Count" data-property="count" value="1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="card-sort" class="col-sm-2 control-label">Sort</label>
+                        <div class="col-sm-10">
+                            <input type="number" id="card-sort" class="form-control" placeholder="Sort" data-property="sort">
                         </div>
                     </div>
                     <div class="form-group">
@@ -430,6 +471,28 @@
                         Return -1 if card_a should appear before card_b.
                     </p>
                     <textarea class="form-control" rows="10" id="sort-function" wrap="off">
+if(card_a.sort) {
+    card_a.sort = parseInt(card_a.sort);
+}
+if(card_b.sort) {
+    card_b.sort = parseInt(card_b.sort);
+}
+if(card_a.sort && !card_b.sort) {
+    return -1;
+}
+else if (!card_a.sort && card_b.sort) {
+    return 1;
+}
+
+if(card_a.sort && card_b.sort) {
+    if(card_a.sort < card_b.sort) {
+        return -1;
+    }
+    else if(card_a.sort > card_b.sort) {
+        return 1;
+    }
+}
+
 if (card_a.title < card_b.title) {
     return -1;
 }

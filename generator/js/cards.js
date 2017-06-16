@@ -1,3 +1,29 @@
+var card_element_generators = {
+    subtitle: card_element_subtitle,
+    property: card_element_property,
+    rule: card_element_ruler,
+    ruler: card_element_ruler,
+    boxes: card_element_boxes,
+    description: card_element_description,
+    dndstats: card_element_dndstats,
+    text: card_element_text,
+    flavor: card_element_flavor,
+    bullet: card_element_bullet,
+    fill: card_element_fill,
+    section: card_element_section,
+    disabled: card_element_empty,
+    picture: card_element_picture,
+    attack: card_element_attack,
+    nb: card_element_nb,
+    icon: card_element_inline_icon,
+    icons: card_element_inline_icons,
+    mana: card_element_mana,
+    cost: card_element_mana,
+    effect: card_element_effect,
+    power: card_element_power
+};
+
+
 // ============================================================================
 // Card definition related functions
 // ============================================================================
@@ -75,7 +101,9 @@ function card_data_icon_back(card_data, options) {
 }
 
 function card_data_split_params(value) {
-    return value.split("|").map(function (str) { return str.trim(); });
+    var placeholder = new Date().getTime();
+    var then = value.split('\\|').join(placeholder);
+    return then.split("|").map(function (str) { return str.replace(new RegExp(placeholder, 'g'), '|').trim(); });
 }
 
 // ============================================================================
@@ -102,6 +130,57 @@ function card_element_icon(card_data, options) {
     return result;
 }
 
+function card_element_nb () {
+    return '<div>&nbsp;</div>';
+}
+
+function card_element_attack (params, card_data, options) {
+    var num = parseInt(params[0])
+    var numIcons = params.length > 1 ? parseInt(params[1]) : num;
+    var result = '<div class="card-attack-num">' + num + '</div>';
+    if(numIcons > 0) {
+        var icons = ""
+        for(var i = 1; i <= numIcons; i++) {
+            icons += '<div class="card-attack-icons-icon num-' + i + '"></div>';
+        }
+        result += '<div class="card-attack-icons num-' + numIcons + '">' + icons + '</div>';
+    }
+    return result;
+}
+
+function card_element_inline_icon (params, card_data, options) {
+    return '<div class="card-element card-inline-icon ' + params[0] + ' ' + params[1] + '" style="background-image: url(./img/' + params[0] + '.png);"></div>';
+}
+
+function card_element_mana (params, card_data, options) {
+    var cost = params[0];
+    return '<div class="card-mana"><span class="card-inline-icon icon-drop"></span><span class="card-mana-cost">' + cost + '</span></div>';
+}
+
+function card_element_power (params, card_data) {
+    params = ['Power', params[0]]
+    return card_element_property(params, card_data);
+}
+
+function card_element_effect (params, card_data, options) {
+    return '<div class="card-effect"><h3 class="card-section">Effect</h3>' + card_element_text(params, card_data, options) + '</div>';
+}
+
+function card_element_inline_icons(params, card_data, options) {
+    var count = params[1] || 1;
+    var icon = params[0] || 3;
+    var threshold = params[2] || count;
+    threshold = parseInt(threshold);
+    console.log('threshold', threshold);
+    var result = "";
+    result += '<div class="card-element card-inline-icons">';
+    for (var i = 0; i < count; ++i) {
+        result += '<div class="card-inline-icons-icon icon-' + icon + ' ' + (i >= (threshold - 1) ? ' diff' : '') + ' style="background-image: url(./img/' + icon + '.png);"></div>';
+    }
+    result += '</div>';
+    return result;
+}
+
 function card_element_subtitle(params, card_data, options) {
     var subtitle = params[0] || "";
     return '<div class="card-element card-subtitle">' + subtitle + '</div>';
@@ -109,7 +188,7 @@ function card_element_subtitle(params, card_data, options) {
 
 function card_element_picture(params, card_data, options) {
     var url = params[0] || "";
-	var height = params[1] || "";
+    var height = params[1] || "";
     return '<div class="card-element card-picture" style ="background-image: url(&quot;' + url + '&quot;); background-size: contain; background-position: center;background-repeat: no-repeat; height:' + height + 'px"></div>';
 }
 
@@ -148,15 +227,15 @@ function card_element_boxes(params, card_data, options) {
 function card_element_property(params, card_data, options) {
     var result = "";
     result += '<div class="card-element card-property-line">';
-    result += '   <h4 class="card-property-name">' + params[0] + '</h4>';
-    result += '   <p class="card-p card-property-text">' + params[1] + '</p>';
-	if (params[2])
-	{
-		result += '   <div style="float:right">';
-		result += '       <h4 class="card-property-name">' + params[2] + '</h4>';
-		result += '       <p class="card-p card-property-text">' + params[3] + '</p>';
-		result += '   </div>';
-	}
+    result += '   <h4 class="card-property-name">' + text_markdown(params[0]) + '</h4>';
+    result += '   <p class="card-p card-property-text">' + text_markdown(params[1]) + '</p>';
+    if (params[2])
+    {
+        result += '   <div style="float:right">';
+        result += '       <h4 class="card-property-name">' + text_markdown(params[2]) + '</h4>';
+        result += '       <p class="card-p card-property-text">' + text_markdown(params[3]) + '</p>';
+        result += '   </div>';
+    }
     result += '</div>';
     return result;
 }
@@ -165,15 +244,21 @@ function card_element_description(params, card_data, options) {
     var result = "";
     result += '<div class="card-element card-description-line">';
     result += '   <h4 class="card-description-name">' + params[0] + '</h4>';
-    result += '   <p class="card-p card-description-text">' + params[1] + '</p>';
+    result += '   <p class="card-p card-description-text">' + text_markdown(params[1]) + '</p>';
     result += '</div>';
     return result;
 }
 
-function card_element_text(params, card_data, options) {
+function card_element_flavor (params, card_data, options) {
+  return card_element_fill(params, card_data) + '<div class="flavor-text">' + card_element_text(params, card_data, options) + '</div>';
+}
+
+function card_element_text (params, card_data, options) {
     var result = "";
+    var text = params[0];
+    text = text_markdown(text);
     result += '<div class="card-element card-description-line">';
-    result += '   <p class="card-p card-description-text">' + params[0] + '</p>';
+    result += '   <p class="card-p card-description-text">' + text + '</p>';
     result += '</div>';
     return result;
 }
@@ -226,7 +311,7 @@ function card_element_bullet(params, card_data, options) {
 function card_element_section(params, card_data, options) {
     var color = card_data_color_front(card_data, options);
     var section = params[0] || "";
-    return '<h3 class="card-section" style="color:' + color + '">' + section + '</h3>';
+    return '<h3 class="card-section">' + section + '</h3>';
 }
 
 function card_element_fill(params, card_data, options) {
@@ -241,22 +326,6 @@ function card_element_unknown(params, card_data, options) {
 function card_element_empty(params, card_data, options) {
     return '';
 }
-
-var card_element_generators = {
-    subtitle: card_element_subtitle,
-    property: card_element_property,
-    rule: card_element_ruler,
-    ruler: card_element_ruler,
-    boxes: card_element_boxes,
-    description: card_element_description,
-    dndstats: card_element_dndstats,
-    text: card_element_text,
-    bullet: card_element_bullet,
-    fill: card_element_fill,
-    section: card_element_section,
-    disabled: card_element_empty,
-	picture: card_element_picture
-};
 
 // ============================================================================
 // Card generating functions
@@ -296,12 +365,26 @@ function card_generate_color_gradient_style(color, options) {
     return 'style="background: radial-gradient(ellipse at center, white 20%, ' + color + ' 120%)"';
 }
 
+function card_generate_tag_classes (data) {
+    var classes = data.tags.reduce(function (list, tag, index) {
+        tag = tag.trim()
+        if(tag.length > 0) {
+            list.push('tag-' + tag);
+        }
+        return list
+    }, []);
+
+    return classes.join(" ");
+}
+
 function card_generate_front(data, options) {
     var color = card_data_color_front(data, options);
     var style_color = card_generate_color_style(color, options);
 
+    var tag_classes = card_generate_tag_classes(data);
+
     var result = "";
-    result += '<div class="card card-size-' + options.card_size + ' ' + data.tags.join(" ") + '" ' + style_color + '>';
+    result += '<div class="card card-size-' + options.card_size + ' color-' + color.toLowerCase() + ' ' + card_generate_tag_classes(data) + '">';
     result += card_element_icon(data, options);
     result += card_element_title(data, options);
     result += card_generate_contents(data.contents, data, options);
@@ -313,27 +396,27 @@ function card_generate_front(data, options) {
 function card_generate_back(data, options) {
     var color = card_data_color_back(data, options)
     var style_color = card_generate_color_style(color, options);
-	var url = data.background_image;
-	var background_style = "";
-	if (url)
-	{
-		background_style = 'style = "background-image: url(&quot;' + url + '&quot;); background-size: contain; background-position: center; background-repeat: no-repeat;"'
-	}
-	else 
-	{
-		background_style = card_generate_color_gradient_style(color, options);
+    var url = data.background_image;
+    var background_style = "";
+    if (url)
+    {
+        background_style = 'style = "background-image: url(&quot;' + url + '&quot;); background-size: contain; background-position: center; background-repeat: no-repeat;"'
     }
-	var icon = card_data_icon_back(data, options);
+    else 
+    {
+        background_style = card_generate_color_gradient_style(color, options);
+    }
+    var icon = card_data_icon_back(data, options);
 
     var result = "";
     result += '<div class="card card-size-' + options.card_size + '" ' + style_color + '>';
     result += '  <div class="card-back" ' + background_style + '>';
-	if (!url)
-	{
-		result += '    <div class="card-back-inner">';
-		result += '      <div class="card-back-icon icon-' + icon + '" ' + style_color + '></div>';
-		result += '    </div>';
-	}
+    if (!url)
+    {
+        result += '    <div class="card-back-inner">';
+        result += '      <div class="card-back-icon icon-' + icon + '" ' + style_color + '></div>';
+        result += '    </div>';
+    }
     result += '  </div>';
     result += '</div>';
 
@@ -508,4 +591,18 @@ function card_pages_insert_into(card_data, container) {
     // Insert the HTML
     var html = card_pages_generate_html(card_data);
     container.innerHTML = html;
+}
+
+function text_markdown (text) {
+    var matches = text.match(/\*\*(.+)\*\*/g)
+    if(matches && matches.length) {
+      for(var i = 0; i < matches.length; i++) {
+        text = text.replace(matches[i], '<strong>' + matches[i].substr(2, matches[i].length - 4) + '</strong>')
+      }
+    }
+    text = text.split('_H_').join('<span class="card-inline-icon icon-hearts"></span>');
+    text = text.split('_D_').join('<span class="card-inline-icon icon-diamonds"></span>');
+    text = text.split('_S_').join('<span class="card-inline-icon icon-spades"></span>');
+    text = text.split('_C_').join('<span class="card-inline-icon icon-clubs"></span>');
+    return text
 }

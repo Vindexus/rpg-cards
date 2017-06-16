@@ -1,0 +1,11 @@
+{
+"hosting": {
+  "public": "generator",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**",
+    "generator/img/**"
+    ]
+  }
+}

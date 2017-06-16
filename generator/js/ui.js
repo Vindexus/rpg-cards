@@ -1,6 +1,8 @@
 // Ugly global variable holding the current card deck
 var card_data = [];
 var card_options = card_default_options();
+var deck_data = [];
+var firebaseLoaded = false;
 
 function mergeSort(arr, compare) {
     if (arr.length < 2)
@@ -126,6 +128,21 @@ function ui_add_new_card() {
     ui_select_card_by_index(card_data.length - 1);
 }
 
+function ui_add_new_deck () {
+    deck_data.push({title: 'New Deck'});
+    local_store_save();
+    local_store_load();
+}
+
+function ui_delete_deck () {
+    if(!confirm("Delete this deck?")) {
+        return
+    }
+    deck_data.splice(ui_selected_deck_index(), 0);
+    local_store_save();
+    local_store_load();
+}
+
 function ui_duplicate_card() {
     if (card_data.length > 0) {
         var old_card = ui_selected_card();
@@ -145,11 +162,23 @@ function ui_select_card_by_index(index) {
 }
 
 function ui_selected_card_index() {
-    return parseInt($("#selected-card").val(), 10);
+    var index = parseInt($("#selected-card").val(), 10);
+    return isNaN(index) ? 0 : index;
+}
+
+function ui_selected_deck_index () {
+    var index = parseInt($("#selected-deck").val(), 10);
+    return isNaN(index) ? 0 : index;
 }
 
 function ui_selected_card() {
-    return card_data[ui_selected_card_index()];
+    var card = card_data[ui_selected_card_index()];
+    card.tags = card.tags || []
+    return card;
+}
+
+function ui_selected_deck () {
+    return card_data[ui_selected_deck_index()];
 }
 
 function ui_delete_card() {
@@ -160,6 +189,7 @@ function ui_delete_card() {
 }
 
 function ui_update_card_list() {
+    card_data = card_data || [];
     $("#total_card_count").text("Deck contains " + card_data.length + " unique cards.");
 
     $('#selected-card').empty();
@@ -172,6 +202,17 @@ function ui_update_card_list() {
     }
 
     ui_update_selected_card();
+}
+
+function ui_update_deck_list() {
+    $('#selected-deck').empty();
+    for (var i = 0; i < deck_data.length; ++i) {
+        var deck = deck_data[i];
+        $('#selected-deck')
+            .append($("<option></option>")
+            .attr("value", i)
+            .text(deck.title));
+    }
 }
 
 function ui_save_file() {
@@ -188,16 +229,26 @@ function ui_save_file() {
     setTimeout(function () { URL.revokeObjectURL(url); }, 500);
 }
 
+function ui_update_selected_deck () {
+    //
+    var data = JSON.parse(window.localStorage.getItem('card_data/' + ui_selected_deck_index()))
+    console.log('data', data);
+    card_data = data;
+    ui_update_card_list();
+    return true;
+}
+
 function ui_update_selected_card() {
     var card = ui_selected_card();
     if (card) {
         $("#card-title").val(card.title);
         $("#card-title-size").val(card.title_size);
         $("#card-count").val(card.count);
+        $("#card-sort").val(card.sort);
         $("#card-icon").val(card.icon);
         $("#card-icon-layout").val(card.icon_layout);
         $("#card-icon-back").val(card.icon_back);
-		$("#card-background").val(card.background_image);
+        $("#card-background").val(card.background_image);
         $("#card-contents").val(card.contents.join("\n"));
         $("#card-tags").val(card.tags.join(", "));
         $("#card-color").val(card.color).change();
@@ -205,9 +256,10 @@ function ui_update_selected_card() {
         $("#card-title").val("");
         $("#card-title-size").val("");
         $("#card-count").val(1);
+        $("#card-sort").val("");
         $("#card-icon").val("");
         $("#card-icon-back").val("");
-		$("#card-background").val("")
+        $("#card-background").val("")
         $("#card-contents").val("");
         $("#card-tags").val("");
         $("#card-color").val("").change();
@@ -306,7 +358,7 @@ function ui_change_card_title() {
     }
 }
 
-function ui_change_card_property() {
+function ui_change_card_property () {
     var property = $(this).attr("data-property");
     var value = $(this).val();
     var card = ui_selected_card();
@@ -470,25 +522,72 @@ function ui_apply_default_icon_back() {
 //Adding support for local store
 function local_store_save() {
     var json = JSON.stringify(card_data)
-    if(window.localStorage){
+    //false cause firebase now
+    if(window.localStorage && false){
         try {
-            localStorage.setItem("card_data", json);
+            var path = "card_data/" + ui_selected_deck_index();
+            localStorage.setItem(path, json);
+            localStorage.setItem("deck_data", JSON.stringify(deck_data));
         } catch (e){
             //if the local store save failed should we notify the user that the data is not being saved?
             console.log(e);
         }
     }
+    var deck_index = ui_selected_deck_index();
+    var fbCards = fbDatabase.ref('cards/' + deck_index);
+    var fbDecks = fbDatabase.ref('decks');
+    console.log('firebaseLoaded', firebaseLoaded);
+    if(firebaseLoaded) {
+        fbCards.set(card_data);
+        fbDecks.set(deck_data);
+    }
     $('#json').val(json);
 }
+
+
+var fbDecks;
+var fbCards;
 function local_store_load() {
-    if(window.localStorage){
+    if(window.localStorage && false){
         try {
-            card_data = JSON.parse(localStorage.getItem("card_data")) || card_data;
+            deck_data = JSON.parse(localStorage.getItem('deck_data')) || deck_data;
+            if(deck_data.length == 0) {
+                deck_data.push({title: 'Default Deck'});
+            }
+            var index = ui_selected_deck_index();
+            if(isNaN(index)) {
+                index = 0;
+            }
+            var path = "card_data/" + index;
+            console.log('path', path);
+            card_data = JSON.parse(localStorage.getItem(path)) || card_data;
+            ui_update_deck_list();
+            ui_update_card_list();
         } catch (e){
             //if the local store load failed should we notify the user that the data load failed?
             console.log(e);
         }
     }
+
+    fbDecks = fbDatabase.ref('decks');
+    fbDecks.on('value', function (snap) {
+        var decks = snap.val()
+        firebaseLoaded = true;
+        if(decks == null) {
+            console.log('empty data from firebase');
+            deck_data = [{title: 'Default Deck'}]
+            ui_update_deck_list();
+        }
+        var index = ui_selected_deck_index();
+        fbCards = fbDatabase.ref('cards/' + index);
+        fbCards.on('value', function (snap) {
+            var val = snap.val();
+            console.log('val', val);
+            card_data = val;
+            ui_update_card_list();
+            ui_render_selected_card();
+        })
+    })
 }
 
 $(document).ready(function () {
@@ -506,25 +605,47 @@ $(document).ready(function () {
     //$("#button-save").click(ui_save_file);
     $("#button-sort").click(ui_sort);
     $("#button-filter").click(ui_filter);
+    
+    $('#button-add-deck').click(ui_add_new_deck);
+    $('#button-delete-deck').click(ui_delete_deck)
+    $('#button-rename-deck').click(function () {
+        var name = prompt("New name");
+        if(name) {
+            deck_data[ui_selected_deck_index()].title = name;
+            local_store_save();
+            ui_update_deck_list();
+        }
+    })
+
     $("#button-add-card").click(ui_add_new_card);
     $("#button-duplicate-card").click(ui_duplicate_card);
     $("#button-delete-card").click(ui_delete_card);
+    
     $("#button-help").click(ui_open_help);
     $("#button-apply-color").click(ui_apply_default_color);
     $("#button-apply-icon").click(ui_apply_default_icon);
     $("#button-apply-icon-back").click(ui_apply_default_icon_back);
 
     $("#selected-card").change(ui_update_selected_card);
+    $("#selected-deck").change(ui_update_selected_deck);
 
     $("#card-title").change(ui_change_card_title);
     $("#card-title-size").change(ui_change_card_property);
     $("#card-icon").change(ui_change_card_property);
     $("#card-icon-layout").change(ui_change_card_property);
     $("#card-count").change(ui_change_card_property);
-    $("#card-count").change(ui_change_card_property);
+    $("#card-sort").change(function (e) {
+        var property = $(this).attr("data-property");
+        var value = $(this).val();
+        var card = ui_selected_card();
+        if (card) {
+            card[property] = parseInt(value);
+            ui_render_selected_card();
+        }
+    });
     $("#card-icon-back").change(ui_change_card_property);
-	$("#card-background").change(ui_change_card_property);
-	$("#card-color").change(ui_change_card_color);
+    $("#card-background").change(ui_change_card_property);
+    $("#card-color").change(ui_change_card_color);
     $("#card-contents").change(ui_change_card_contents);
     $("#card-tags").change(ui_change_card_tags);
 
@@ -548,6 +669,24 @@ $(document).ready(function () {
 
     $("#sort-execute").click(ui_sort_execute);
     $("#filter-execute").click(ui_filter_execute);
+
+    $('#select-prev-card').click(function (e) {
+        e.preventDefault();
+        var index = parseInt($('#selected-card').val());
+        if(index == 0) {
+            index = card_data.length - 1;
+        }
+        ui_select_card_by_index(index - 1);
+    })
+
+    $('#select-next-card').click(function (e) {
+        e.preventDefault();
+        var index = parseInt($('#selected-card').val());
+        if(index >= card_data.length - 1) {
+            index = 0
+        }
+        ui_select_card_by_index(index + 1);
+    })
 
     ui_update_card_list();
 });
