@@ -11,8 +11,12 @@
     box-sizing: border-box;
 }
 
-.monster-ability .card-description-text {
+.tag-monster-ability .card-description-text {
     font-size: 15px;
+}
+
+.tag-character .card-description-text {
+    font-size: 11px;
 }
 
 .card-content-container {
@@ -485,4 +489,16 @@
 .card-mana h3,
 .card-effect h3 {
     display: none;
+}
+
+.suit-icon {
+    font-size: 16px;
+    line-height: 12px;
+}
+
+.card.color-black {
+    border: 2mm solid black;
+    color: black;
+    background: black;
+
 }

@@ -173,7 +173,9 @@ function ui_selected_deck_index () {
 
 function ui_selected_card() {
     var card = card_data[ui_selected_card_index()];
+    card = card || {}
     card.tags = card.tags || []
+    card.contents = card.contents || []
     return card;
 }
 
@@ -215,7 +217,7 @@ function ui_update_deck_list() {
     }
 }
 
-function ui_save_file() {
+function ui_save_file () {
     var str = JSON.stringify(card_data, null, "  ");
     var parts = [str];
     var blob = new Blob(parts, { type: 'application/json' });
@@ -227,15 +229,6 @@ function ui_save_file() {
     a.click();
 
     setTimeout(function () { URL.revokeObjectURL(url); }, 500);
-}
-
-function ui_update_selected_deck () {
-    //
-    var data = JSON.parse(window.localStorage.getItem('card_data/' + ui_selected_deck_index()))
-    console.log('data', data);
-    card_data = data;
-    ui_update_card_list();
-    return true;
 }
 
 function ui_update_selected_card() {
@@ -520,79 +513,61 @@ function ui_apply_default_icon_back() {
 
 
 //Adding support for local store
-function local_store_save() {
-    var json = JSON.stringify(card_data)
-    //false cause firebase now
-    if(window.localStorage && false){
-        try {
-            var path = "card_data/" + ui_selected_deck_index();
-            localStorage.setItem(path, json);
-            localStorage.setItem("deck_data", JSON.stringify(deck_data));
-        } catch (e){
-            //if the local store save failed should we notify the user that the data is not being saved?
-            console.log(e);
-        }
-    }
+function local_store_save () {
     var deck_index = ui_selected_deck_index();
     var fbCards = fbDatabase.ref('cards/' + deck_index);
     var fbDecks = fbDatabase.ref('decks');
-    console.log('firebaseLoaded', firebaseLoaded);
     if(firebaseLoaded) {
         fbCards.set(card_data);
         fbDecks.set(deck_data);
+        console.log('deck_data to save', deck_data);
     }
-    $('#json').val(json);
+    $('#json').val(JSON.stringify(card_data));
 }
 
 
 var fbDecks;
 var fbCards;
-function local_store_load() {
-    if(window.localStorage && false){
-        try {
-            deck_data = JSON.parse(localStorage.getItem('deck_data')) || deck_data;
-            if(deck_data.length == 0) {
-                deck_data.push({title: 'Default Deck'});
-            }
-            var index = ui_selected_deck_index();
-            if(isNaN(index)) {
-                index = 0;
-            }
-            var path = "card_data/" + index;
-            console.log('path', path);
-            card_data = JSON.parse(localStorage.getItem(path)) || card_data;
-            ui_update_deck_list();
-            ui_update_card_list();
-        } catch (e){
-            //if the local store load failed should we notify the user that the data load failed?
-            console.log(e);
-        }
+function local_store_load (forceRefresh) {
+    if(forceRefresh) {
+        firebaseLoaded = false;
     }
-
     fbDecks = fbDatabase.ref('decks');
     fbDecks.once('value', function (snap) {
-        var decks = snap.val()
+        deck_data = snap.val();
+        console.log('firebaseLoaded', firebaseLoaded);
+        console.log('deck_data from firebase', deck_data);
         firebaseLoaded = true;
-        if(decks == null) {
-            console.log('empty data from firebase');
+        if(deck_data == null) {
+            console.log('blank from firebase');
             deck_data = [{title: 'Default Deck'}]
-            ui_update_deck_list();
         }
-        var index = ui_selected_deck_index();
-        fbCards = fbDatabase.ref('cards/' + index);
-        fbCards.once('value', function (snap) {
-            var val = snap.val();
-            console.log('val', val);
-            card_data = val;
-            var index = ui_selected_card_index();
-            console.log('ui_selected_card_index', ui_selected_card_index);
-            ui_update_card_list();
-            //$('#selected-card').val(index);
-            ui_select_card_by_index(index);
-            //ui_render_selected_card();
-        })
-    })
+        ui_update_deck_list();
+        load_deck_cards();
+    });
 }
+
+function load_deck_cards () {
+    var index = ui_selected_deck_index();
+    console.log('index', index);
+    fbCards = fbDatabase.ref('cards/' + index);
+    fbCards.once('value', function (snap) {
+        var val = snap.val();
+        card_data = val;
+        console.log('card_data', card_data);
+        var index = ui_selected_card_index();
+        ui_update_card_list();
+        ui_select_card_by_index(index);
+    })
+
+}
+
+function ui_update_selected_deck () {
+    load_deck_cards();
+    return true;
+}
+
+
 
 $(document).ready(function () {
     local_store_load();

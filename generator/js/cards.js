@@ -366,6 +366,7 @@ function card_generate_color_gradient_style(color, options) {
 }
 
 function card_generate_tag_classes (data) {
+    data.tags = data.tags || [];
     var classes = data.tags.reduce(function (list, tag, index) {
         tag = tag.trim()
         if(tag.length > 0) {
@@ -600,9 +601,9 @@ function text_markdown (text) {
         text = text.replace(matches[i], '<strong>' + matches[i].substr(2, matches[i].length - 4) + '</strong>')
       }
     }
-    text = text.split('_H_').join('<span class="card-inline-icon icon-hearts"></span>');
-    text = text.split('_D_').join('<span class="card-inline-icon icon-diamonds"></span>');
-    text = text.split('_S_').join('<span class="card-inline-icon icon-spades"></span>');
-    text = text.split('_C_').join('<span class="card-inline-icon icon-clubs"></span>');
+    text = text.split('_H_').join('<span class="suit-icon suit-heart">♥</span>');
+    text = text.split('_D_').join('<span class="suit-icon suit-heart">♦</span>');
+    text = text.split('_S_').join('<span class="suit-icon suit-heart">♠</span>');
+    text = text.split('_C_').join('<span class="suit-icon suit-heart">♣</span>');
     return text
 }

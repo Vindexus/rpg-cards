@@ -244,12 +244,6 @@
                 <!--<h3>Card</h3>-->
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
-                        <label for="selected-deck" class="col-sm-2 control-label">Deck</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" id="selected-deck"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
                         <label class="col-sm-2 control-label"></label>
                         <div class="col-sm-3">
                             <button type="button" class="btn btn-primary btn-block" id="button-add-deck">Add new deck</button>
@@ -261,19 +255,14 @@
                             <button type="button" class="btn btn-danger btn-block" id="button-delete-deck">Delete deck</button>
                         </div>
                     </div>
-
                     <div class="form-group">
-                        <label for="selected-card" class="col-sm-2 control-label">Card</label>
-                        <div class="col-sm-8">
-                            <select class="form-control" id="selected-card"></select>
+                        <label for="selected-deck" class="col-sm-2 control-label">Deck</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="selected-deck"></select>
                         </div>
-                        <div class="col-sm-2">
-                            <div class="btn-group">
-                                <button class="btn btn-sm" id="select-prev-card" type="button">/\</button>
-                                <button class="btn btn-sm" id="select-next-card" type="button">\/</button>
-                            </div>
-                        </div>
+                        <p class="form-control-static col-sm-offset-2 col-sm-10" id="total_card_count">Deck contains 0 cards.</p>
                     </div>
+
                     <div class="form-group">
                         <label class="col-sm-2 control-label"></label>
                         <div class="col-sm-4">
@@ -285,7 +274,19 @@
                         <div class="col-sm-3">
                             <button type="button" class="btn btn-primary btn-block" id="button-duplicate-card">Duplicate card</button>
                         </div>
-                        <p class="form-control-static col-sm-offset-2 col-sm-10" id="total_card_count">Deck contains 0 cards.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="selected-card" class="col-sm-2 control-label">Card</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" id="selected-card"></select>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="btn-group">
+                                <button class="btn btn" id="select-prev-card" type="button">/\</button>
+                                <button class="btn btn" id="select-next-card" type="button">\/</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="card-title" class="col-sm-2 control-label">Name</label>
