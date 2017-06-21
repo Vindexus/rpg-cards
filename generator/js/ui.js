@@ -513,16 +513,34 @@ function ui_apply_default_icon_back() {
 
 
 //Adding support for local store
+var lastSaved = 0;
+var lastJson = "";
+var timesUp = false;
+setTimeout(function () {
+    timesUp = true;
+}, 1000)
 function local_store_save () {
     var deck_index = ui_selected_deck_index();
     var fbCards = fbDatabase.ref('cards/' + deck_index);
     var fbDecks = fbDatabase.ref('decks');
+    var now = new Date().getTime();
+    var json = JSON.stringify(card_data);
+
     if(firebaseLoaded) {
         fbCards.set(card_data);
         fbDecks.set(deck_data);
-        console.log('deck_data to save', deck_data);
+
+        //If now is ten minutes past the last time it was saved, then we make a copy
+        if(now > lastSaved + 10 * 60 * 1000 && lastJson != json && timesUp) {
+            console.log('save a copy');
+            var fbCardCopy = fbDatabase.ref('card_backups/' + deck_index + '/' + now);
+            lastSaved = now;
+            lastJson = json;
+            fbCardCopy.set(card_data);
+        }
     }
-    $('#json').val(JSON.stringify(card_data));
+    $('#json').val(json);
+    window.localStorage.setItem('cards/' + deck_index, json);
 }
 
 
@@ -550,6 +568,8 @@ function local_store_load (forceRefresh) {
 function load_deck_cards () {
     var index = ui_selected_deck_index();
     console.log('index', index);
+    var json = window.localStorage.getItem('cards/' + index);
+    console.log('JSON', json);
     fbCards = fbDatabase.ref('cards/' + index);
     fbCards.once('value', function (snap) {
         var val = snap.val();

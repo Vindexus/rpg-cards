@@ -595,6 +595,9 @@ function card_pages_insert_into(card_data, container) {
 }
 
 function text_markdown (text) {
+    if(!text) {
+        return '';
+    }
     var matches = text.match(/\*\*(.+)\*\*/g)
     if(matches && matches.length) {
       for(var i = 0; i < matches.length; i++) {
