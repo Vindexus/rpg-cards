@@ -130,8 +130,8 @@ function ui_add_new_card() {
 
 function ui_add_new_deck () {
     deck_data.push({title: 'New Deck'});
-    local_store_save();
-    local_store_load();
+    data_store_save();
+    data_store_load();
 }
 
 function ui_delete_deck () {
@@ -139,8 +139,8 @@ function ui_delete_deck () {
         return
     }
     deck_data.splice(ui_selected_deck_index(), 0);
-    local_store_save();
-    local_store_load();
+    data_store_save();
+    data_store_load();
 }
 
 function ui_duplicate_card() {
@@ -190,9 +190,26 @@ function ui_delete_card() {
     ui_select_card_by_index(Math.min(index, card_data.length - 1));
 }
 
+function get_selected_from_hash () {
+    var hash = window.location.hash;
+    console.log('hash', hash);
+    var parts = hash.split('/');
+    console.log('parts', parts);
+    if(parts.length > 0) {
+        return {
+            deck: parseInt(parts[1]),
+            card: parseInt(parts[3])
+        }
+    }
+    return false;
+}
+
 function ui_update_card_list() {
     card_data = card_data || [];
     $("#total_card_count").text("Deck contains " + card_data.length + " unique cards.");
+
+    var selected_items = get_selected_from_hash();
+    console.log('selected_items', selected_items);
 
     $('#selected-card').empty();
     for (var i = 0; i < card_data.length; ++i) {
@@ -203,6 +220,9 @@ function ui_update_card_list() {
             .text(card.title));
     }
 
+    if(selected_items) {
+        ui_select_card_by_index(selected_items.card);
+    }
     ui_update_selected_card();
 }
 
@@ -229,6 +249,14 @@ function ui_save_file () {
     a.click();
 
     setTimeout(function () { URL.revokeObjectURL(url); }, 500);
+}
+
+function update_location () {
+    if(firebaseLoaded) {
+        window.location.hash = 'deck/' + ui_selected_deck_index() + '/card/' + ui_selected_card_index();
+        console.log('update_location');
+    }
+    console.log('DONT update_location');
 }
 
 function ui_update_selected_card() {
@@ -258,6 +286,7 @@ function ui_update_selected_card() {
         $("#card-color").val("").change();
     }
 
+    update_location();
     ui_render_selected_card();
 }
 
@@ -269,7 +298,7 @@ function ui_render_selected_card() {
         var back = card_generate_back(card, card_options);
         $('#preview-container').html(front + "\n" + back);
     }
-    local_store_save()
+    data_store_save()
 }
 
 function ui_open_help() {
@@ -519,7 +548,7 @@ var timesUp = false;
 setTimeout(function () {
     timesUp = true;
 }, 1000)
-function local_store_save () {
+function data_store_save () {
     var deck_index = ui_selected_deck_index();
     var fbCards = fbDatabase.ref('cards/' + deck_index);
     var fbDecks = fbDatabase.ref('decks');
@@ -546,7 +575,7 @@ function local_store_save () {
 
 var fbDecks;
 var fbCards;
-function local_store_load (forceRefresh) {
+function data_store_load (forceRefresh) {
     if(forceRefresh) {
         firebaseLoaded = false;
     }
@@ -566,31 +595,38 @@ function local_store_load (forceRefresh) {
 }
 
 function load_deck_cards () {
-    var index = ui_selected_deck_index();
-    console.log('index', index);
-    var json = window.localStorage.getItem('cards/' + index);
+    var hash_selected = get_selected_from_hash();
+    console.log('hash_selected', hash_selected);
+    var deck_index = ui_selected_deck_index();
+    console.log('deck_index', deck_index);
+    var json = window.localStorage.getItem('cards/' + deck_index);
     console.log('JSON', json);
-    fbCards = fbDatabase.ref('cards/' + index);
+    fbCards = fbDatabase.ref('cards/' + deck_index);
     fbCards.once('value', function (snap) {
         var val = snap.val();
         card_data = val;
         console.log('card_data', card_data);
-        var index = ui_selected_card_index();
+        var card_index = ui_selected_card_index();
+        console.log('card_index', card_index);
+        if(card_index == 0 && hash_selected && hash_selected.card) {
+            card_index = hash_selected.card;
+        }
         ui_update_card_list();
-        ui_select_card_by_index(index);
+        ui_select_card_by_index(card_index);
     })
 
 }
 
 function ui_update_selected_deck () {
     load_deck_cards();
+    update_location();
     return true;
 }
 
 
 
 $(document).ready(function () {
-    local_store_load();
+    data_store_load();
     ui_setup_color_selector();
     $('.icon-list').typeahead({source:icon_names, items: 'all'});
 
@@ -611,7 +647,7 @@ $(document).ready(function () {
         var name = prompt("New name");
         if(name) {
             deck_data[ui_selected_deck_index()].title = name;
-            local_store_save();
+            data_store_save();
             ui_update_deck_list();
         }
     })
