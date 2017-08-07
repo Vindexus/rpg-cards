@@ -7,6 +7,7 @@ var card_element_generators = {
     description: card_element_description,
     dndstats: card_element_dndstats,
     text: card_element_text,
+    weapon_text: card_element_weapon_text,
     flavor: card_element_flavor,
     bullet: card_element_bullet,
     fill: card_element_fill,
@@ -17,9 +18,16 @@ var card_element_generators = {
     nb: card_element_nb,
     icon: card_element_inline_icon,
     icons: card_element_inline_icons,
+    corner_icon: card_element_corner_icon,
+    movement: card_element_movement,
+    health: card_element_health,
+    range: card_element_range,
+    dice: card_element_dice,
+    damage: card_element_damage,
     mana: card_element_mana,
     cost: card_element_mana,
     effect: card_element_effect,
+    tags: card_element_tags,
     power: card_element_power
 };
 
@@ -152,13 +160,44 @@ function card_element_inline_icon (params, card_data, options) {
     return '<div class="card-element card-inline-icon ' + params[0] + ' ' + params[1] + '" style="background-image: url(./img/' + params[0] + '.png);"></div>';
 }
 
+function card_element_corner_icon (params, card_data, options) {
+    var icon = params[0];
+    var num = params[1];
+    return '<div class="card-corner-icon"><span class="card-inline-icon icon-' + icon + '"></span><span class="card-corner-icon-num">' + num + '</span></div>';
+}
+
 function card_element_mana (params, card_data, options) {
     var cost = params[0];
     return '<div class="card-mana"><span class="card-inline-icon icon-drop"></span><span class="card-mana-cost">' + cost + '</span></div>';
 }
 
+function card_element_range (params, card_data, options) {
+    params = ['range', params[0]];
+    return card_element_corner_icon(params, card_data, options);
+}
+
+function card_element_damage (params, card_data, options) {
+    params = ['damage', params[0]];
+    return card_element_corner_icon(params, card_data, options);
+}
+
+function card_element_dice (params, card_data, options) {
+    params = ['dice', params[0]];
+    return card_element_corner_icon(params, card_data, options);
+}
+
+function card_element_health (params, card_data, options) {
+    params = ['health', params[0]];
+    return card_element_corner_icon(params, card_data, options);
+}
+
+function card_element_movement (params, card_data, options) {
+    params = ['movement', params[0]];
+    return card_element_corner_icon(params, card_data, options);
+}
+
 function card_element_power (params, card_data) {
-    params = ['Power', params[0]]
+    params = ['power', params[0]]
     return card_element_property(params, card_data);
 }
 
@@ -166,14 +205,13 @@ function card_element_effect (params, card_data, options) {
     return '<div class="card-effect"><h3 class="card-section">Effect</h3>' + card_element_text(params, card_data, options) + '</div>';
 }
 
-function card_element_inline_icons(params, card_data, options) {
+function card_element_inline_icons (params, card_data, options) {
     var count = params[1] || 1;
     var icon = params[0] || 3;
     var threshold = params[2] || count;
     threshold = parseInt(threshold);
-    console.log('threshold', threshold);
     var result = "";
-    result += '<div class="card-element card-inline-icons">';
+    result += '<div class="card-element card-inline-icons icons-' + count + '">';
     for (var i = 0; i < count; ++i) {
         result += '<div class="card-inline-icons-icon icon-' + icon + ' ' + (i >= (threshold - 1) ? ' diff' : '') + ' style="background-image: url(./img/' + icon + '.png);"></div>';
     }
@@ -263,6 +301,10 @@ function card_element_text (params, card_data, options) {
     return result;
 }
 
+function card_element_weapon_text () {
+    return '<div class="card-weapon-text">' + card_element_text.apply(null, arguments) + '</div>';
+}
+
 function card_element_dndstats(params, card_data, options) {
     var stats = [10, 10, 10, 10, 10, 10];
     var mods = [0,0,0,0,0,0];
@@ -311,7 +353,7 @@ function card_element_bullet(params, card_data, options) {
 function card_element_section(params, card_data, options) {
     var color = card_data_color_front(card_data, options);
     var section = params[0] || "";
-    return '<h3 class="card-section">' + section + '</h3>';
+    return '<h3 class="card-section">' + text_markdown(section) + '</h3>';
 }
 
 function card_element_fill(params, card_data, options) {
@@ -319,12 +361,16 @@ function card_element_fill(params, card_data, options) {
     return '<span class="card-fill" style="flex:' + flex + '"></span>';
 }
 
-function card_element_unknown(params, card_data, options) {
+function card_element_unknown (params, card_data, options) {
     return '<div>Unknown element: ' + params.join('<br />') + '</div>';
 }
 
 function card_element_empty(params, card_data, options) {
     return '';
+}
+
+function card_element_tags (params, card_data, options) {
+    return '<div class="card-tags">' + text_markdown(params[0]) + '</div>';
 }
 
 // ============================================================================
@@ -366,6 +412,10 @@ function card_generate_color_gradient_style(color, options) {
 }
 
 function card_generate_tag_classes (data) {
+    if(typeof(data.tags) == 'string') {
+        data.tags = data.tags.split(/\s|,/g);
+        console.log('data.tags',data.tags);
+    }
     data.tags = data.tags || [];
     var classes = data.tags.reduce(function (list, tag, index) {
         tag = tag.trim()
@@ -604,9 +654,17 @@ function text_markdown (text) {
         text = text.replace(matches[i], '<strong>' + matches[i].substr(2, matches[i].length - 4) + '</strong>')
       }
     }
+    text = text.split('_VP_').join('<span class="card-inline-icon icon icon-victory-point"></span>');
+    text = text.split('_HEALTH_').join('<span class="card-inline-icon icon icon-health"></span>');
+    text = text.split('_RANGE_').join('<span class="card-inline-icon icon icon-range"></span>');
+    text = text.split('_DAMAGE_').join('<span class="card-inline-icon icon icon-damage"></span>');
+    text = text.split('_MOVE_').join('<span class="card-inline-icon icon icon-movement"></span>');
+    text = text.split('_MOVEMENT_').join('<span class="card-inline-icon icon icon-movement"></span>');
+    text = text.split('_POWER_').join('<span class="card-inline-icon icon icon-power"></span>');
+    text = text.split('_OVERLOAD_').join('<span class="card-inline-icon icon icon-overload"></span>');
     text = text.split('_H_').join('<span class="suit-icon suit-heart">♥</span>');
-    text = text.split('_D_').join('<span class="suit-icon suit-heart">♦</span>');
-    text = text.split('_S_').join('<span class="suit-icon suit-heart">♠</span>');
-    text = text.split('_C_').join('<span class="suit-icon suit-heart">♣</span>');
+    text = text.split('_D_').join('<span class="suit-icon suit-diamond">♦</span>');
+    text = text.split('_S_').join('<span class="suit-icon suit-spade">♠</span>');
+    text = text.split('_C_').join('<span class="suit-icon suit-club">♣</span>');
     return text
 }

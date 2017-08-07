@@ -192,9 +192,7 @@ function ui_delete_card() {
 
 function get_selected_from_hash () {
     var hash = window.location.hash;
-    console.log('hash', hash);
     var parts = hash.split('/');
-    console.log('parts', parts);
     if(parts.length > 0) {
         return {
             deck: parseInt(parts[1]),
@@ -204,12 +202,41 @@ function get_selected_from_hash () {
     return false;
 }
 
+/**
+ * Gets the number of cards that match a suit
+ *
+ * @param {String} suit D/S/C/H
+ */
+function get_cards_with_suit (suit) {
+    suit = suit.toUpperCase();
+    var num = 0;
+    card_data.forEach(function (card) {
+        var c = card.contents.join("");
+        if(c.indexOf('_' + suit + '_') >= 0) {
+            num++;
+        }
+    });
+
+    return num;
+}
+
+function get_num_of_cards () {
+    var num = 0;
+    card_data.forEach(function (card) {
+        num += parseInt(card.count);
+    });
+
+    return num;
+}
+
 function ui_update_card_list() {
     card_data = card_data || [];
-    $("#total_card_count").text("Deck contains " + card_data.length + " unique cards.");
+    $("#total_card_count").text("Deck has " + card_data.length + " unique cards (" + get_num_of_cards() + " total). ♥: " + get_cards_with_suit('H') + 
+        ", ♦: " + get_cards_with_suit('D') +
+        ", ♠: " + get_cards_with_suit('S') +
+        ", ♣: " + get_cards_with_suit('C'));
 
     var selected_items = get_selected_from_hash();
-    console.log('selected_items', selected_items);
 
     $('#selected-card').empty();
     for (var i = 0; i < card_data.length; ++i) {
@@ -221,12 +248,15 @@ function ui_update_card_list() {
     }
 
     if(selected_items) {
+        //ui_selected_deck();
         ui_select_card_by_index(selected_items.card);
     }
     ui_update_selected_card();
 }
 
 function ui_update_deck_list() {
+    var selected = get_selected_from_hash();
+    var deck_index = selected.deck;
     $('#selected-deck').empty();
     for (var i = 0; i < deck_data.length; ++i) {
         var deck = deck_data[i];
@@ -235,6 +265,7 @@ function ui_update_deck_list() {
             .attr("value", i)
             .text(deck.title));
     }
+    $('#selected-deck').val(selected.deck);
 }
 
 function ui_save_file () {
@@ -254,9 +285,7 @@ function ui_save_file () {
 function update_location () {
     if(firebaseLoaded) {
         window.location.hash = 'deck/' + ui_selected_deck_index() + '/card/' + ui_selected_card_index();
-        console.log('update_location');
     }
-    console.log('DONT update_location');
 }
 
 function ui_update_selected_card() {
@@ -562,7 +591,7 @@ function data_store_save () {
         //If now is ten minutes past the last time it was saved, then we make a copy
         if(now > lastSaved + 10 * 60 * 1000 && lastJson != json && timesUp) {
             console.log('save a copy');
-            var fbCardCopy = fbDatabase.ref('card_backups/' + deck_index + '/' + now);
+            var fbCardCopy = fbDatabase.ref('card_backups/' + deck_index + '/' + new Date().toISOString().split(/[\s:\.]/g).join('-'));
             lastSaved = now;
             lastJson = json;
             fbCardCopy.set(card_data);
@@ -709,7 +738,7 @@ $(document).ready(function () {
         e.preventDefault();
         var index = parseInt($('#selected-card').val());
         if(index == 0) {
-            index = card_data.length - 1;
+            index = card_data.length;
         }
         ui_select_card_by_index(index - 1);
     })
@@ -718,7 +747,7 @@ $(document).ready(function () {
         e.preventDefault();
         var index = parseInt($('#selected-card').val());
         if(index >= card_data.length - 1) {
-            index = 0
+            index = -1
         }
         ui_select_card_by_index(index + 1);
     })

@@ -120,7 +120,7 @@
     width: 24mm;
     height: 24mm;
     margin-left: -12mm;
-    top: 14mm;
+    top: 10mm;
 }
 
 .card-title-icon-container {
@@ -360,12 +360,13 @@
 
 .card-content-container .card-inline-icon {
     display: inline-block;
-    height: 14px;
-    width: 14px;
+    height: 18px;
+    width: 18px;
     background-position: center center;
     background-size: contain;
     background-repeat: no-repeat;
     margin-bottom: -3px;
+    border-radius: 3px;
 }
 
 .card-attack-icons-icon {
@@ -403,6 +404,10 @@
     padding-top: 1mm;
 }
 
+.color-white .card-title-icon-container.icon-layout-newline_large {
+    top: 14mm;
+}
+
 .color-white .card-content-container {
     border: 1mm solid black;
     border-top: 0px;
@@ -425,10 +430,10 @@
 
 .card .card-inline-icons .card-inline-icons-icon {
     background-size: contain;
-    float: left;
+    display: inline-block;
     width: 26px;
     height: 26px;
-    margin: 0 5px 0 0;
+    margin: 0 5px 0;
 }
 
 .card-title-icon-container.icon-layout-newline_large {
@@ -451,7 +456,8 @@
     line-height: 1.2;
 }
 
-.card .card-mana {
+.card .card-mana,
+.card .card-corner-icon {
     font-size: 18px;
     line-height: 26px;
     position: absolute;
@@ -461,11 +467,28 @@
     padding: 4px 10px 4px 7px;
     width: 100%;
     top: 0;
-    border-bottom: 1px solid #000;
     letter-spacing: -2px;
+    height: 40px;
 }
 
-.card .card-mana .card-mana-cost {
+.card .card-corner-icon:nth-of-type(2) {
+    top: 30px;
+}
+
+.card .card-corner-icon:nth-of-type(3) {
+    top: 60px;
+}
+
+.card .card-corner-icon .card-inline-icon.icon-hearts {
+    background-size: 90%;
+}
+
+.card .card-mana {
+    border-bottom: 1px solid #000;
+}
+
+.card .card-mana .card-mana-cost,
+.card .card-corner-icon-num {
     position: relative;
     top: -3px;
 }
@@ -482,6 +505,19 @@
     margin-bottom: 0px;
 }
 
+.card .card-corner-icon .card-inline-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 5px;
+    background-size: 100%;
+    background-position: center;
+    display: inline-block;
+    margin-right: 5px;
+    position: relative;
+    top: 3px;
+    margin-bottom: 0px;
+}
+
 .card-mana, .card-effect {
     margin-bottom: 3mm;
 }
@@ -492,13 +528,145 @@
 }
 
 .suit-icon {
-    font-size: 16px;
-    line-height: 12px;
+    font-size: 22px;
+    line-height: 8px;
+    position: relative;
+    top: 2px;
+}
+
+.suit-heart,
+.suit-diamond {
+    color: red;
 }
 
 .card.color-black {
     border: 2mm solid black;
     color: black;
     background: black;
-
 }
+
+.card.color-darkred {
+    border: 2mm solid darkred;
+    color: darkred;
+    background: darkred;
+}
+
+.color-white .card-ruler polyline {
+    fill: black;
+}
+
+.icon-damage {
+    background-image: url(../img/mine/screen-impact-black.png) !important;
+    background-color: transparent !important;
+}
+
+.icon-range {
+    background-image: url(../img/mine/targeted-black.png) !important;
+    background-color: transparent !important;
+}
+
+.icon-overload {
+    background-image: url(../img/mine/hazard-sign-black.png) !important;
+    background-color: transparent !important;
+}
+
+.icon-dice {
+    background-image: url(../img/mine/rolling-dices-black.png) !important;
+    background-color: transparent !important;
+}
+
+.icon-health {
+    background-image: url(../img/mine/hearts-black.png) !important;
+    background-color: transparent !important;
+}
+
+.icon-power {
+    background-image: url(../img/mine/power-button-black.png) !important;
+    background-color: transparent !important;
+}
+
+.icon-movement {
+    background-image: url(../img/mine/sprint-black.png) !important;
+    background-color: transparent !important;
+}
+
+.icon-medal-skull {
+    background-image: url(../img/mine/medal-skull-black.png) !important;
+    background-color: transparent !important;
+}
+
+.icon-victory-point {
+    background-image: url(../img/mine/trophy-black.png) !important;
+    background-color: transparent !important;
+}
+
+.card-content-container .card-section  .card-inline-icon {
+    margin-bottom: -1px;
+}
+
+.card-weapon-text .card-description-text {
+    font-size: 1.3em;
+}
+
+.card-weapon-text .card-inline-icon.icon-damage {
+    margin-left: 5px;
+}
+
+.tag-icons .card-inline-icons.icons-4 {
+    padding: 0 36px;
+}
+
+.tag-icons .card-inline-icons.icons-2,
+.tag-icons .card-inline-icons.icons-1 {
+    padding: 0 73px;
+}
+
+.card.tag-icons .card-inline-icons-icon {
+    width: 52px;
+    height: 52px;
+    margin: 0px 10px 10px;
+}
+
+.card-content-container .card-description-text  .card-inline-icon.icon-range {
+    width: 16px;
+    background-position: bottom center;
+}
+
+.card-description-text {
+    display: block;
+    text-align: center;
+}
+
+.card-section {
+    text-align: center;
+    padding: 0 0 1px 0;
+    font-size: 12pt;
+}
+
+.tag-bot .card-section {
+    font-size: 10pt;
+    padding: 0px;
+}
+
+.tag-directive .card-element.card-inline-icons {
+    text-align: center;
+    padding-top: 10px;
+}
+
+.card .card-tags {
+    background: #000;
+    color: #fff;
+    font-style: italic;
+    text-align: center;
+    padding: 2px 0;
+    margin: 0 -8px 8px;
+}
+
+.card.tag-pickup .card-title.icon-layout-newline_large {
+    padding-bottom: 33mm;
+}
+
+.card.tag-pickup .card-title-icon-container.icon-layout-newline_large {
+    top: 9mm;
+}
+
