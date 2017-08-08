@@ -691,6 +691,20 @@
     height: 40px;
 }
 
-.card.tag-rolling-reference .card-title-icon-container {
+.card.tag-rolling-reference .card-title-icon-container,
+.card.tag-result-reference .card-title-icon-container {
     display: none;
+}
+
+.card.tag-result-reference .card-description-text .icon {
+    width: 18px;
+    height: 18px;
+}
+
+.card.tag-result-reference .card-description-text {
+    text-align: left;
+    font-size: 10pt;
+    padding-bottom: 4px;
+    margin-bottom: 3px;
+    border-bottom: 1px solid #d0d0d0;
 }

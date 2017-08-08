@@ -655,6 +655,14 @@ function text_markdown (text) {
         text = text.replace(matches[i], '<strong>' + matches[i].substr(2, matches[i].length - 4) + '</strong>')
       }
     }
+    matches = text.match(/{([a-z\-]+)}/g)
+    if(matches && matches.length) {
+      for(var i = 0; i < matches.length; i++) {
+        console.log('matches[i]',matches[i]);
+        text = text.replace(matches[i], '<span class="card-inline-icon icon icon-' + matches[i].substr(1,matches[i].length - 2) + '"></span>');
+      }
+    }
+
     text = text.split('_VP_').join('<span class="card-inline-icon icon icon-victory-point"></span>');
     text = text.split('_HEALTH_').join('<span class="card-inline-icon icon icon-health"></span>');
     text = text.split('_RANGE_').join('<span class="card-inline-icon icon icon-range"></span>');
