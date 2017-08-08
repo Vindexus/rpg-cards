@@ -61,19 +61,19 @@ function card_default_data() {
     }
 }
 
-function card_init(card) {
+function card_init (card) {
     card.title = card.title || "";
     card.contents = card.contents || [];
     card.tags = card.tags || [];
 }
 
-function card_has_tag(card, tag) {
+function card_has_tag (card, tag) {
     tag = tag.trim().toLowerCase();
     var index = card.tags.indexOf(tag);
     return index > -1;
 }
 
-function card_add_tag(card, tag) {
+function card_add_tag (card, tag) {
     tag = tag.trim().toLowerCase();
     var index = card.tags.indexOf(tag);
     if (index == -1) {
@@ -81,7 +81,7 @@ function card_add_tag(card, tag) {
     }
 }
 
-function card_remove_tag(card, tag) {
+function card_remove_tag (card, tag) {
     tag = tag.trim().toLowerCase();
     card.tags = card.tags.filter(function (t) {
         return tag != t;
@@ -412,10 +412,11 @@ function card_generate_color_gradient_style(color, options) {
 }
 
 function card_generate_tag_classes (data) {
+    console.log('data.tags',data.tags);
     if(typeof(data.tags) == 'string') {
         data.tags = data.tags.split(/\s|,/g);
-        console.log('data.tags',data.tags);
     }
+    console.log('data.tags',data.tags);
     data.tags = data.tags || [];
     var classes = data.tags.reduce(function (list, tag, index) {
         tag = tag.trim()

@@ -600,6 +600,16 @@
     background-color: transparent !important;
 }
 
+.icon-skull-crossed-bones {
+    background-image: url(../img/mine/skull-crossed-bones-black.png) !important;
+    background-color: transparent !important;
+}
+
+.card-content-container .icon-spanner {
+    background-image: url(../img/mine/spanner-black.png) !important;
+    background-color: transparent !important;
+}
+
 .card-content-container .card-section  .card-inline-icon {
     margin-bottom: -1px;
 }
@@ -670,3 +680,17 @@
     top: 9mm;
 }
 
+.card p {
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+}
+
+
+.card.tag-rolling-reference .card-description-text .icon {
+    width: 40px;
+    height: 40px;
+}
+
+.card.tag-rolling-reference .card-title-icon-container {
+    display: none;
+}

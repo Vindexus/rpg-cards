@@ -492,7 +492,8 @@ function ui_change_card_tags() {
         if (value.trim().length == 0) {
             card.tags = [];
         } else {
-            card.tags = value.split(",").map(function (val) {
+            console.log('card.tags', card.tags);
+            card.tags = value.split(/[,|\s]/).map(function (val) {
                 return val.trim().toLowerCase();
             });
         }
@@ -611,8 +612,6 @@ function data_store_load (forceRefresh) {
     fbDecks = fbDatabase.ref('decks');
     fbDecks.once('value', function (snap) {
         deck_data = snap.val();
-        console.log('firebaseLoaded', firebaseLoaded);
-        console.log('deck_data from firebase', deck_data);
         firebaseLoaded = true;
         if(deck_data == null) {
             console.log('blank from firebase');
@@ -625,18 +624,13 @@ function data_store_load (forceRefresh) {
 
 function load_deck_cards () {
     var hash_selected = get_selected_from_hash();
-    console.log('hash_selected', hash_selected);
     var deck_index = ui_selected_deck_index();
-    console.log('deck_index', deck_index);
     var json = window.localStorage.getItem('cards/' + deck_index);
-    console.log('JSON', json);
     fbCards = fbDatabase.ref('cards/' + deck_index);
     fbCards.once('value', function (snap) {
         var val = snap.val();
         card_data = val;
-        console.log('card_data', card_data);
         var card_index = ui_selected_card_index();
-        console.log('card_index', card_index);
         if(card_index == 0 && hash_selected && hash_selected.card) {
             card_index = hash_selected.card;
         }
